@@ -1,0 +1,13 @@
+*build
+*.yaml
+*.zip
+*.rar
+*.exe
+*.pdb
+*.tar.gz
+3rdparty/
+BJT_stereo_35cm/
+BJT_stereo_65cm/
+Henry_stereo_30cm/
+Henry_stereo_31cm/
+cmake-build-debug/
