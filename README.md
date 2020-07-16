@@ -1,4 +1,9 @@
 # FisheyeCalibration
+标定前一定先修改fisheye_calibrate.cpp中的image_size,board_size,square_size
+
+分别为：图像大小，棋盘格标定板的焦点数量８＊６即为竖直方向为８个，水平方向为６个，以及每个棋盘格的尺寸，单位为ｍｍ， 71.5即为71.5mm
+
+还有采集图像时captureImage.cpp中的Width和Height，要与fisheye_calibrate.cpp中的image_size一致；
 ## 第一步：采集图像
 `./src/captureImage video_num path_to_save_images MONO`
 
@@ -11,10 +16,6 @@ path_to_save_images: 用于保存采集来的标定图像的路径
 具体的采集图像代码参见captureImage.cpp, 可根据自己的实际情况修改代码；
 
 ## 第二步： 相机标定
-标定前一定先修改fisheye_calibrate.cpp中的image_size,board_size,square_size
-
-分别为：图像大小，棋盘格标定板的焦点数量８＊６即为竖直方向为８个，水平方向为６个，以及每个棋盘格的尺寸，单位为ｍｍ， 71.5即为71.5mm
-
 `./src/fisheyeCalib path_to_calibration_images`
 
 path_to_calibration_images: 是第一步采集来的图像的保存路径，这里直接传入即可；
