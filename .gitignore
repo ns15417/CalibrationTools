@@ -1,3 +1,5 @@
+.vscode/
+.idea/workspace.xml
 *build
 *.yaml
 *.zip
@@ -11,3 +13,9 @@ BJT_stereo_65cm/
 Henry_stereo_30cm/
 Henry_stereo_31cm/
 cmake-build-debug/
+210_stereo/
+180_thr/
+src/*.cpp
+!fisheye_calibrate.cpp
+!captureImage.cpp
+

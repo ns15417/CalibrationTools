@@ -17,18 +17,18 @@ using namespace std;
 using namespace cv;                                        
 const int imageWidth = 640;                             
 const int imageHeight = 480;
-const int boardWidth = 8;
-const int boardHeight = 6;
+const int boardWidth = 6;
+const int boardHeight = 8;
 const int boardCorner = boardWidth * boardHeight;
                             
 
-const float squareSize = 0.051; //actual square size in m
-const int frameNumber =21;
+const float squareSize = 71; //actual square size in m
+const int frameNumber =25;
 
-string folder_ = "/home/shinan/Project/Calibration/Henry_stereo_30cm/";
+string folder_ = "/home/shinan/Project/Calibration/210_stereo_0816/";
 string format_R = "right";
 string format_L = "left";
-const Size boardSize = Size(8, 6);
+const Size boardSize = Size(6, 8);
 Size imageSize = Size(640, 480);
 Mat R, T, E, F;
 vector<Mat> rvecs;
@@ -48,19 +48,17 @@ Rect validROIL, validROIR;
 /*fx 0 cx
 0 fy cy
 0 0  1*/
-Mat cameraMatrixL = (Mat_<double>(3, 3) << 329.6097279444598, 0, 331.175152524404,
-0, 328.1697074161112, 236.8864680415888,
-0, 0, 1);
+Mat cameraMatrixL = (Mat_<double>(3, 3) << 163.38454640186166 ,0., 316.93740846397657, 0.,
+163.44478732969247, 220.67943473133187, 0., 0., 1);
 
-Mat distCoeffL = (Mat_<double>(5, 1) << -0.2754059638752426, 0.0585763687394319, 0.0006185554148720049, 1.117975415713642e-05,0);
+Mat distCoeffL = (Mat_<double>(5, 1) << -0.27, 0.05, 0, 0,0);
 /*
 fx 0 cx
 0 fy cy
 0 0  1*/
-Mat cameraMatrixR = (Mat_<double>(3, 3) << 329.6097279444598, 0, 330.6758941468899,
-0, 328.1697074161112, 246.0393771650396,
-0, 0, 1);
-Mat distCoeffR = (Mat_<double>(5, 1) << -0.2673692728595115, 0.05249778508056966, -0.0004142975139702069, -5.86915650585915e-05, 0);
+Mat cameraMatrixR = (Mat_<double>(3, 3) <<164.41558284668497, 0., 335.20449837071766, 0.,
+165.28255528761292, 242.49520037582414, 0., 0., 1);
+Mat distCoeffR = (Mat_<double>(5, 1) << -0.26, 0.05, 0, 0, 0);
 
 void calRealPoint(vector<vector<Point3f>>& obj, int boardwidth, int boardheight, int imgNumber, int squaresize)
 { 	
@@ -80,7 +78,7 @@ void calRealPoint(vector<vector<Point3f>>& obj, int boardwidth, int boardheight,
 
 void outputCameraParam(void)                   
 {
-	FileStorage fs("/home/shinan/Project/Calibration/Henry_stereo_30cm/Fish_stereo_intrinsics.yml", FileStorage::WRITE);
+	FileStorage fs(folder_+"/Fish_stereo_intrinsics.yml", FileStorage::WRITE);
 
 	if (fs.isOpened())	
 	{		
@@ -92,7 +90,7 @@ void outputCameraParam(void)
 	{		
 		cout << "Error: can not save the intrinsics!!!!!" << endl;	
 	}	
-	fs.open("/home/shinan/Project/Calibration/Henry_stereo_30cm/Fish_stereo_extrinsics.yml", FileStorage::WRITE);
+	fs.open(folder_+ "/Fish_stereo_extrinsics.yml", FileStorage::WRITE);
 	if (fs.isOpened())	
 	{		
 		fs << "R" << R << "T" << T << "Rl" << Rl << "Rr" << Rr << "Pl" << Pl << "Pr" << Pr << "Q" << Q;
@@ -107,19 +105,20 @@ int main(int argc, char* argv[])
 {	
 	Mat img;	
 	int goodFrameCount = 1;
+        int FrameCount = 1;
 	cout << "Total Images is" << frameNumber << endl;
-	while (goodFrameCount < frameNumber)	
+	while (FrameCount < frameNumber)	
 	{
-		std::string tmp_str = to_string(goodFrameCount);
-		if (goodFrameCount < 10)
-			tmp_str = '0' + to_string(goodFrameCount);
-		cout <<"Current image is " << goodFrameCount << endl;
+		std::string tmp_str = to_string(FrameCount);
+		if (FrameCount < 10)
+			tmp_str = '0' + to_string(FrameCount);
+		cout <<"Current image is " << FrameCount << endl;
 
 		string 	filenamel,filenamer;
         filenamel = folder_ + format_L+ tmp_str +".jpg";
         filenamer = folder_ + format_R+ tmp_str +".jpg";
 		rgbImageL = imread(filenamel, -1);
-        rgbImageR = imread(filenamer, CV_LOAD_IMAGE_COLOR);
+        rgbImageR = imread(filenamer, -1);
         if(rgbImageL.channels()>=3)
         {
             cvtColor(rgbImageL, grayImageL, CV_BGR2GRAY);
@@ -141,13 +140,14 @@ int main(int argc, char* argv[])
 			drawChessboardCorners(rgbImageR, boardSize, cornerR, isFindR);		
 			//imshow("chessboardR", rgbImageR);
 			imagePointR.push_back(cornerR);						
-			goodFrameCount++;			
-			cout << "The image" << goodFrameCount << " is good" << endl;	
+			FrameCount++;	
+                        goodFrameCount++;		
+			cout << "The image" << FrameCount << " is good" << endl;	
 		}		
 		else		
 		{			
-			cout << "The image "<< goodFrameCount <<"is bad please try again" << endl;
-			goodFrameCount++;
+			cout << "The image "<< FrameCount <<"is bad please try again" << endl;
+			FrameCount++;
 		}		
 
 		if (waitKey(10) == 'q')		
@@ -156,7 +156,7 @@ int main(int argc, char* argv[])
 		}	
 	}	
 
-	calRealPoint(objRealPoint, boardWidth, boardHeight, frameNumber-1, squareSize);	
+	calRealPoint(objRealPoint, boardWidth, boardHeight, goodFrameCount-1, squareSize);	
 	cout << "cal real successful" << endl;
 	double rms = cv::stereoCalibrate(objRealPoint, imagePointL, imagePointR,
 		cameraMatrixL, distCoeffL,
@@ -165,9 +165,14 @@ int main(int argc, char* argv[])
 		CV_CALIB_USE_INTRINSIC_GUESS+
 		CV_CALIB_SAME_FOCAL_LENGTH +
 		CV_CALIB_RATIONAL_MODEL  +
-        CV_CALIB_FIX_K3+ CV_CALIB_FIX_K4 + CV_CALIB_FIX_K5+ CV_CALIB_FIX_K6,
+                //CALIB_ZERO_TANGENT_DIST +
+        /*CV_CALIB_FIX_K3*/+ CV_CALIB_FIX_K4 + CV_CALIB_FIX_K5+ CV_CALIB_FIX_K6,
 		TermCriteria(TermCriteria::COUNT + TermCriteria::EPS, 80, 1e-5));	
 	cout << "Stereo Calibration done with RMS error = " << rms << endl;
+
+    stereoRectify(cameraMatrixL, distCoeffL, cameraMatrixR, distCoeffR, imageSize, R, T, Rl, Rr, Pl, Pr, Q,		CALIB_ZERO_DISPARITY, -1, imageSize, &validROIL, &validROIR);
+        std::cout<<"validRoi[0] :"<<  validROIL <<std::endl;
+        std::cout<< "validRoi[1]: "<< validROIR <<std::endl;
 
 	initUndistortRectifyMap(cameraMatrixL, distCoeffL, Rl, Pr, imageSize, CV_32FC1, mapLx, mapLy); 	
 	initUndistortRectifyMap(cameraMatrixR, distCoeffR, Rr, Pr, imageSize, CV_32FC1, mapRx, mapRy);	

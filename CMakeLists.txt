@@ -20,15 +20,18 @@ include_directories(${PROJECT_SOURCE_DIR}/src/)
 
 #set(OpenCV_DIR "D:/opencv3.1/opencv/build")
 find_package(OpenCV 3.1 REQUIRED)
-set(EIGEN3_INCLUDE_DIR "/home/shinan/linux_lib/eigen/")
-find_package(Boost REQUIRED)
-set(CERES_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/ceres_solver/include)
-set(GLOG_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/glog/include)
+find_package(Eigen3)
+message(${EIGEN3_INCLUDE_DIR})
+find_package(Boost REQUIRED COMPONENTS filesystem)
+#set(CERES_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/ceres_solver/include)
+#set(GLOG_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/glog/include)
 
+include_directories(${Boost_INCLUDE_DIRS})
+message(${Boost_INCLUDE_DIRS})
 include_directories(
     ${OpenCV_INCLUDE_DIR}
-	${CERES_INCLUDE_DIR}
-	${GLOG_INCLUDE_DIR}
+	#${CERES_INCLUDE_DIR}
+	#${GLOG_INCLUDE_DIR}
 	${EIGEN3_INCLUDE_DIR})
 
 add_subdirectory(src)
