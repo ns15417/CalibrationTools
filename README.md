@@ -1,4 +1,4 @@
-#calibration tools 
+# FisheyeCalibration
 
 #相机标定
 第一步：采集图像
@@ -38,4 +38,3 @@ UNDISTORTION： 表示要调用去畸变功能；
 
 具体代码在captureImage.cpp中，这里可以根据自己实际的图像或视频采集条件修改，最主要的函数是：RealTimeUndistort()
 这里需要手动修改k1,k2,p1,p2的值 以及fx,fy,cx,cy，也就是第二步的标定结果；
-    
