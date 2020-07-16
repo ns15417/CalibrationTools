@@ -3,7 +3,7 @@
 
 分别为：图像大小，棋盘格标定板的焦点数量８＊６即为竖直方向为８个，水平方向为６个，以及每个棋盘格的尺寸，单位为ｍｍ， 71.5即为71.5mm
 
-还有采集图像时captureImage.cpp中的Width和Height，要与fisheye_calibrate.cpp中的image_size一致；
+**还有采集图像时captureImage.cpp中的Width和Height**，要与fisheye_calibrate.cpp中的image_size一致；
 ## 第一步：采集图像
 `./src/captureImage video_num path_to_save_images MONO`
 
@@ -61,7 +61,7 @@ UNDISTORTION： 表示要调用去畸变功能；
 
 具体代码在captureImage.cpp中，这里可以根据自己实际的图像或视频采集条件修改，**最主要的函数是**：RealTimeUndistort()
 
-这里需要手动修改k1,k2,p1,p2的值 以及fx,fy,cx,cy，也就是第二步的标定结果；
+**这里需要手动修改k1,k2,p1,p2的值 以及fx,fy,cx,cy**，也就是第二步的标定结果；
 
 所使用模型论文参加：
 
