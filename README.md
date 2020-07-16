@@ -1,7 +1,9 @@
 # FisheyeCalibration
 ## 第一步：采集图像
 `./src/captureImage video_num path_to_save_images MONO`
+
 其中videonum是摄像头在设备下的编号，如/dev/video1， 则video_num 为1
+
 path_to_save_images: 用于保存采集来的标定图像的路径
 
 窗口出来之后，按a键采集图像， 采集图像时的要求， 尽量保持相机不动，移动标定板，尽可能上下左右地多角度采集图像，保证最后采集出的图片集中，标定板在图像的各个角落都有出现(尽量全)，不同角度的图片总共25张左右即可；
@@ -9,6 +11,10 @@ path_to_save_images: 用于保存采集来的标定图像的路径
 具体的采集图像代码参见captureImage.cpp, 可根据自己的实际情况修改代码；
 
 ## 第二步： 相机标定
+标定前一定先修改fisheye_calibrate.cpp中的image_size,board_size,square_size
+
+分别为：图像大小，棋盘格标定板的焦点数量８＊６即为竖直方向为８个，水平方向为６个，以及每个棋盘格的尺寸，单位为ｍｍ， 71.5即为71.5mm
+
 `./src/fisheyeCalib path_to_calibration_images`
 
 path_to_calibration_images: 是第一步采集来的图像的保存路径，这里直接传入即可；
@@ -40,6 +46,10 @@ cx,cy为实际的图像中心，最理想的情况为cx = Width/2,cy = Height/2;
 具体代码参见： fisheye_calibrate.cpp
 
 ## 第三步：获取实时的去畸变图像
+注意查看captureImage.cpp文件中的**Width**和**Height**是否与采集的图像一致；
+
+**标定时采集的图像大小，应该与实际使用去畸变时的图像大小一样；**
+
 `./src/captureImage video_num 　path_to_save_images UNDISTORTION`
 
 video_num 与第一步的意义一样
