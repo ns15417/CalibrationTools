@@ -143,13 +143,32 @@ void ValuateResult(std::vector<std::string> filenames, vector<vector<Point3f> > 
     }
     err = norm(image_points2Mat, tempImagePointMat, NORM_L2);
     total_err += err /= point_counts[i];
-    cout << "第" << i + 1 << "幅图像的平均误差：" << err << "像素" << endl;
+    cout << "图像" << filenames[i] << "  的平均误差：" << err << "像素" << endl;
   }
   cout << "总体平均误差：" << total_err / num << "像素" << endl;
   cout << "评价完成！" << endl;
 
 }
 
+cv::Mat GenerateNewFrame(cv::Size imgSize, cv::Mat &ori_img)
+{
+  cv::Mat newImg;
+  ori_img.copyTo(newImg);
+  if(newImg.channels() == 3){
+    cv::cvtColor(newImg,newImg,CV_RGB2GRAY);
+  }
+  cout << "newImg.rows: " << newImg.rows << ", newImg.cols " << newImg.cols << endl;
+  for(int i = 160; i< 320; i++){
+   //uchar* row_data = newImg.ptr<uchar>(i);
+    for(int j = 120; j <240;j++)
+    {
+      newImg.at<uchar>(j,i) = 255;
+    }
+  }
+  cout << "Generate new mask..." <<endl;
+  cv::imwrite("mask.png",newImg);
+  return newImg;
+}
 
 int main(int argc, char* argv[]) {
   ofstream fout("caliberation_result.txt");
@@ -251,9 +270,35 @@ int main(int argc, char* argv[]) {
     cv::Mat t(gray_img.size(), gray_img.type());
     cv::remap(gray_img, t, mapx, mapy, INTER_LINEAR);
     string imageFileName = imagenames[i] + "_d.jpg";
-    imwrite(imageFileName, t);
+    //imwrite(imageFileName, t);
   }
-  cout << "保存结束" << endl;
 
+  cout << "保存结束" << endl;
+  cv::Mat fisheyeImg = cv::imread(imagenames[0]);
+  cv::Mat fisheyeImg_gray;
+  cv::cvtColor(fisheyeImg,fisheyeImg_gray,CV_BGR2GRAY);
+  cv::Mat fisheyeImg_t(fisheyeImg_gray.size(), fisheyeImg_gray.type());
+  cv::remap(fisheyeImg, fisheyeImg_t, mapx, mapy, INTER_LINEAR);
+
+  cv::Mat mask = GenerateNewFrame(fisheyeImg.size(),fisheyeImg_t);
+  for(int i = 120; i< 240; i++){
+    for(int j = 160; j < 320;j++)
+    {
+      int value =  mask.at<uchar>(i,j);
+      float loc_x = mapx.at<float>(i,j);
+      float loc_y = mapy.at<float>(i,j);
+      int new_x = std::floor(loc_x); //col
+      int new_y = std::floor(loc_y); //row
+      if(value == 255){
+        fisheyeImg.at<Vec3b>(new_y,new_x)[0] = 255;
+        fisheyeImg.at<Vec3b>(new_y,new_x)[1] = 0;
+        fisheyeImg.at<Vec3b>(new_y,new_x)[2] = 0;
+      }
+    }
+  }
+
+
+  cv::imwrite("fishwithmask.png",fisheyeImg);
   return 0;
+
 }
