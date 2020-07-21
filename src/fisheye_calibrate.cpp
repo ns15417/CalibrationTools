@@ -66,20 +66,26 @@ int FindCheessboard(std::vector<std::string> &filenames, vector<Point2f> &corner
     if (!patternfound) {
       std::cout << "can not find chessboard corners!\n";
     } else {
-      cornerSubPix(imageGray, corners, Size(11, 11), Size(-1, -1),
-                   TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
-
       Mat imageTemp = image.clone();
       for (int j = 0; j < static_cast<int>(corners.size()); j++) {
-        circle(imageTemp, corners[j], 10, Scalar(0, 0, 255), 2, 8, 0);
+        circle(imageTemp, corners[j], 2, Scalar(0, 255, 0), 2, 8, 0);
       }
-      
+
+    //   cornerSubPix(imageGray, corners, Size(11, 11), Size(-1, -1),
+    //                TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+
+    //  for (int j = 0; j < static_cast<int>(corners.size()); j++) {
+    //     circle(imageTemp, corners[j], 2, Scalar(0, 0, 255), 2, 8, 0);
+    //   }
+
       std::string imgname2 = curImgName +"_corner.jpg";
-      imwrite(imgname2, imageTemp);
+      //imwrite(imgname2, imageTemp);
 
       //count = count + corners.size();
       successImgNUm = successImgNUm + 1;
       corners_Seq.push_back(corners);
+      cout << "current names pushback " << curImgName<< endl;
+      newFilenames.push_back(curImgName);
     }
   }
 
