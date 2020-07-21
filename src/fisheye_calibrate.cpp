@@ -51,10 +51,10 @@ int get_filenames(const std::string& dir, std::vector<std::string>& filenames)
     return (int)filenames.size();
 }
 
-int FindCheessboard(std::vector<std::string> &filenames, vector<Point2f> &corners,  vector<int> &point_counts,vector<vector<Point2f> > &corners_Seq)
+int FindCheessboard(std::vector<std::string> &filenames, vector<std::string> &newFilenames,  vector<int> &point_counts,vector<vector<Point2f> > &corners_Seq)
 {
   int successImgNUm = 0;
- 
+  std::vector<cv::Point2f> corners;
   for(int i =0;i < static_cast<int>(filenames.size()); i++)
   {
     std::string curImgName = filenames[i];
@@ -115,7 +115,7 @@ void GetObjectPoint(vector<vector<Point3f> > &object_Points, int number)
   }
 }
 /* 每幅图像的平移向量 */   /* 每幅图像的旋转向量 */
-void ValuateResult(std::vector<std::string> filenames, vector<vector<Point3f> > object_Points,
+void ValuateResult(std::vector<std::string> &filenames, vector<vector<Point3f>> object_Points,
   std::vector<cv::Vec3d> rotation_vectors,  
   std::vector<cv::Vec3d> translation_vectors,
   cv::Matx33d &intrinsic_matrix, cv::Vec4d &distortion_coeffs,
@@ -183,15 +183,15 @@ int main(int argc, char* argv[]) {
   std::vector<std::string> imagenames;
   get_filenames(image_path,imagenames);
   
-  vector<Point2f> corners;
   vector<vector<Point2f> > corners_Seq;
   vector<Mat> image_Seq;
   vector<int> point_counts;
+  vector<std::string> sucFilenames;
   // // if you want to calibrate online
   // VideoCapture cap(1);
   // Mat image;
 
-  int successImageNum = FindCheessboard(imagenames,corners,point_counts,corners_Seq);
+  int successImageNum = FindCheessboard(imagenames,sucFilenames,point_counts,corners_Seq);
     
 
   /************************************************************************
@@ -226,7 +226,7 @@ int main(int argc, char* argv[]) {
                               对定标结果进行评价
   *************************************************************************/
   cout << "开始评价定标结果………………" << endl;
-  ValuateResult(imagenames, object_Points,rotation_vectors,  translation_vectors,intrinsic_matrix, distortion_coeffs, corners_Seq,point_counts);
+  ValuateResult(sucFilenames, object_Points,rotation_vectors,  translation_vectors,intrinsic_matrix, distortion_coeffs, corners_Seq,point_counts);
 
   /************************************************************************
                               保存定标结果
@@ -238,7 +238,7 @@ int main(int argc, char* argv[]) {
   cout << intrinsic_matrix << endl;
   cout << "畸变系数：\n";
   cout << distortion_coeffs << endl;
-  for (int i = 0; i < static_cast<int>(imagenames.size()); i++) {
+  for (int i = 0; i < static_cast<int>(sucFilenames.size()); i++) {
     /* 将旋转向量转换为相对应的旋转矩阵 */
     Rodrigues(rotation_vectors[i], rotation_matrix);
     cout << "第" << i + 1 << "幅图像的旋转矩阵：" << endl;
@@ -267,6 +267,7 @@ int main(int argc, char* argv[]) {
         image_size, CV_32FC1, mapx, mapy
   );
   
+  //cout << "mapx: " << mapx << endl;
   cout << "保存矫正图像" << endl;
   for (int i = 0; i < static_cast<int>(imagenames.size()); i++) {
     cout << "Frame #" << i + 1 << "..." << endl;    
