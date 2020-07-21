@@ -65,7 +65,7 @@ void CaptureMonoImg(int camid, const std::string filepath)
 		cv::imshow("current Image",reading_img);
 		char c=cv::waitKey(1);
 		if(c=='a'){
-			std::string filename = filepath + std::to_string(img_num) + ".png";
+			std::string filename = filepath + "/" +std::to_string(img_num) + ".png";
 			cv::imwrite(filename, reading_img);
 			img_num++;
 		}
