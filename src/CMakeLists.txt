@@ -4,8 +4,8 @@
 
 #link_directories(${PROJECT_SOURCE_DIR}/3rdparty/ceres_solver/lib)
 #link_directories(${PROJECT_SOURCE_DIR}/3rdparty/glog/lib)
-message(${Boost_LIBRARIES})
-				 
+
+message(${OpenCV_LIBS})
 add_executable(captureImage
                captureImage.cpp
               )
@@ -14,4 +14,12 @@ target_link_libraries(captureImage
 
 add_executable(fisheyeCalib fisheye_calibrate.cpp)
 target_link_libraries(fisheyeCalib ${OpenCV_LIBS}
-        ${Boost_LIBRARIES})	  
+        ${Boost_LIBRARIES})
+
+add_executable(FisheyeStereo_calib FisheyeStereo_calib.cpp)
+target_link_libraries(FisheyeStereo_calib ${OpenCV_LIBS}
+        ${Boost_LIBRARIES})
+
+//add_executable(stereo_calib stereo_calib.cpp)
+//target_link_libraries(stereo_calib ${OpenCV_LIBS}
+        //${Boost_LIBRARIES})	  
