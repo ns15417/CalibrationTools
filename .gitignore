@@ -18,3 +18,4 @@ cmake-build-debug/
 src/*.cpp
 !fisheye_calibrate.cpp
 !captureImage.cpp
+!FisheyeStereo_calib.cpp
