@@ -2,6 +2,8 @@
 #include<opencv2/opencv.hpp>
 //#include<boost/filesystem.hpp>
 //#include "calibration.hpp"
+#include "opencv2/imgproc/types_c.h"
+#include "opencv2/video.hpp"
 #include<chrono>
 
 //https://blog.csdn.net/aptx704610875/article/details/48914043
@@ -18,10 +20,10 @@ void CaptureStereoImg(const int leftcamid, const int rightcamid,const std::strin
 	cv::Mat src_img2;
 	cv::VideoCapture cap1(leftcamid);
 	cv::VideoCapture cap2(rightcamid);
-    cap1.set(CV_CAP_PROP_FRAME_HEIGHT,Height);
-    cap1.set(CV_CAP_PROP_FRAME_WIDTH,Width);
-    cap2.set(CV_CAP_PROP_FRAME_HEIGHT,Height);
-    cap2.set(CV_CAP_PROP_FRAME_WIDTH,Width);
+    cap1.set(cv::CAP_PROP_FRAME_HEIGHT,Height);
+    cap1.set(cv::CAP_PROP_FRAME_WIDTH,Width);
+    cap2.set(cv::CAP_PROP_FRAME_HEIGHT,Height);
+    cap2.set(cv::CAP_PROP_FRAME_WIDTH,Width);
 	while (cap1.read(src_img1) &&cap2.read(src_img2) )
 	{
 		std::string filename1;
@@ -34,10 +36,10 @@ void CaptureStereoImg(const int leftcamid, const int rightcamid,const std::strin
 			std::string tmpname = std::to_string(img_num);
 			if (img_num < 10)
 				tmpname = "0" + std::to_string(img_num);
-			filename1 = filepath + "/left" + tmpname +".jpg";
+			filename1 = filepath + "/left/" + tmpname +".jpg";
 			std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
 			imwrite(filename1, src_img1);
-			filename1 = filepath+"/right" + tmpname + ".jpg";
+			filename1 = filepath+"/right/" + tmpname + ".jpg";
 			std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
 			double timeused = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1).count();
 			std::cout << "time used to save image " << img_num << "is : " << timeused << std::endl;
@@ -57,8 +59,8 @@ void CaptureMonoImg(int camid, const std::string filepath)
 {
 	int img_num=0;
 	cv::VideoCapture cap(camid);
-	cap.set(CV_CAP_PROP_FRAME_WIDTH,Width);
-	cap.set(CV_CAP_PROP_FRAME_HEIGHT,Height);
+	cap.set(cv::CAP_PROP_FRAME_WIDTH,Width);
+	cap.set(cv::CAP_PROP_FRAME_HEIGHT,Height);
 	cv::Mat reading_img;
 	while(cap.read(reading_img))
 	{
@@ -86,14 +88,14 @@ void CaptureMonoImg(int camid, const std::string filepath)
  */
 void RealTimeUndistort(cv::Mat &ori_img, cv::Mat &new_img)
 {
-	float fx = 218.6096956604608;
-	float fy = 219.389195700917;
-	float cx = 335.3285348074681;
+	float fx = 214.9764957371081;
+	float fy = 215.6817940573768;
+	float cx = 334.804151915779;
 	float cy = 238.0918046000016;
-	float k1 = -0.0884051;
-	float k2 = -0.0339568;
-	float p1 = 0.0468607;
-	float p2 = -0.0167997;
+	float k1 = -0.100371;
+	float k2 = 0.0257397;
+	float p1 = -0.0211074;
+	float p2 = 0.00568583;
 
   cv::Matx33f intrinsic_matrix = cv::Matx33f::eye();
   intrinsic_matrix(0,0) = fx;  intrinsic_matrix(1,1) = fy;
@@ -145,8 +147,8 @@ int main(int argc, char **argv)
 		cv::Mat t(Height,Width,CV_8UC1);
 
 		cv::VideoCapture cap(camid);
-	    cap.set(CV_CAP_PROP_FRAME_WIDTH,Width);
-	    cap.set(CV_CAP_PROP_FRAME_HEIGHT,Height);
+	    cap.set(cv::CAP_PROP_FRAME_WIDTH,Width);
+	    cap.set(cv::CAP_PROP_FRAME_HEIGHT,Height);
 	    cv::Mat reading_img;
 	    while(cap.read(reading_img))
 	    {
