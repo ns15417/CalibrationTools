@@ -60,7 +60,7 @@ int FindCheessboard(std::vector<std::string> &filenames, vector<std::string> &ne
     std::string curImgName = filenames[i];
     cv::Mat image = imread(curImgName);
     cv::Mat imageGray;
-    cvtColor(image, imageGray, CV_BGR2GRAY);
+    cvtColor(image, imageGray, cv::COLOR_BGR2GRAY);
   
     bool patternfound = findChessboardCorners(imageGray, board_size, corners,CALIB_CB_ADAPTIVE_THRESH);
     if (!patternfound) {
@@ -161,7 +161,7 @@ cv::Mat GenerateNewFrame(cv::Size imgSize, cv::Mat &ori_img)
   cv::Mat newImg;
   ori_img.copyTo(newImg);
   if(newImg.channels() == 3){
-    cv::cvtColor(newImg,newImg,CV_RGB2GRAY);
+    cv::cvtColor(newImg,newImg,cv::COLOR_BGR2GRAY);
   }
   cout << "newImg.rows: " << newImg.rows << ", newImg.cols " << newImg.cols << endl;
   for(int i = 160; i< 320; i++){
@@ -273,7 +273,7 @@ int main(int argc, char* argv[]) {
     cout << "Frame #" << i + 1 << "..." << endl;    
     cv::Mat ori_img = cv::imread(imagenames[i]);
     cv::Mat gray_img;
-    cv::cvtColor(ori_img,gray_img,CV_BGR2GRAY);
+    cv::cvtColor(ori_img,gray_img,cv::COLOR_BGR2GRAY);
     cv::Mat t(gray_img.size(), gray_img.type());
     cv::remap(gray_img, t, mapx, mapy, INTER_LINEAR);
     string imageFileName = imagenames[i] + "_d.jpg";
@@ -282,30 +282,30 @@ int main(int argc, char* argv[]) {
 
   cout << "保存结束" << endl;
   cv::Mat fisheyeImg = cv::imread(imagenames[0]);
-  cv::Mat fisheyeImg_gray;
-  cv::cvtColor(fisheyeImg,fisheyeImg_gray,CV_BGR2GRAY);
-  cv::Mat fisheyeImg_t(fisheyeImg_gray.size(), fisheyeImg_gray.type());
+  //cv::Mat fisheyeImg_gray;
+  //cv::cvtColor(fisheyeImg,fisheyeImg_gray,cv::COLOR_BGR2GRAY);
+  cv::Mat fisheyeImg_t(fisheyeImg.size(), fisheyeImg.type());
   cv::remap(fisheyeImg, fisheyeImg_t, mapx, mapy, INTER_LINEAR);
 
-  cv::Mat mask = GenerateNewFrame(fisheyeImg.size(),fisheyeImg_t);
-  for(int i = 120; i< 240; i++){
-    for(int j = 160; j < 320;j++)
-    {
-      int value =  mask.at<uchar>(i,j);
-      float loc_x = mapx.at<float>(i,j);
-      float loc_y = mapy.at<float>(i,j);
-      int new_x = std::floor(loc_x); //col
-      int new_y = std::floor(loc_y); //row
-      if(value == 255){
-        fisheyeImg.at<Vec3b>(new_y,new_x)[0] = 255;
-        fisheyeImg.at<Vec3b>(new_y,new_x)[1] = 0;
-        fisheyeImg.at<Vec3b>(new_y,new_x)[2] = 0;
-      }
-    }
-  }
+  // cv::Mat mask = GenerateNewFrame(fisheyeImg.size(),fisheyeImg_t);
+  // for(int i = 120; i< 240; i++){
+  //   for(int j = 160; j < 320;j++)
+  //   {
+  //     int value =  mask.at<uchar>(i,j);
+  //     float loc_x = mapx.at<float>(i,j);
+  //     float loc_y = mapy.at<float>(i,j);
+  //     int new_x = std::floor(loc_x); //col
+  //     int new_y = std::floor(loc_y); //row
+  //     if(value == 255){
+  //       fisheyeImg.at<Vec3b>(new_y,new_x)[0] = 255;
+  //       fisheyeImg.at<Vec3b>(new_y,new_x)[1] = 0;
+  //       fisheyeImg.at<Vec3b>(new_y,new_x)[2] = 0;
+  //     }
+  //   }
+  // }
 
 
-  cv::imwrite("fishwithmask.png",fisheyeImg);
+  cv::imwrite("fishwithmask.png",fisheyeImg_t);
   return 0;
 
 }
