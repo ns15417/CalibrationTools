@@ -88,14 +88,14 @@ void CaptureMonoImg(int camid, const std::string filepath)
  */
 void RealTimeUndistort(cv::Mat &ori_img, cv::Mat &new_img)
 {
-	float fx = 214.9764957371081;
-	float fy = 215.6817940573768;
-	float cx = 334.804151915779;
-	float cy = 238.0918046000016;
-	float k1 = -0.100371;
-	float k2 = 0.0257397;
-	float p1 = -0.0211074;
-	float p2 = 0.00568583;
+	float fx = 215.1636214437263;
+	float fy = 215.4109839659041;
+	float cx = 339.7327852579838;
+	float cy = 236.3261084252313;
+	float k1 = -0.0939258;
+	float k2 = 0.00205771;
+	float p1 = 0.00153354;
+	float p2 = -0.0010307;
 
   cv::Matx33f intrinsic_matrix = cv::Matx33f::eye();
   intrinsic_matrix(0,0) = fx;  intrinsic_matrix(1,1) = fy;
@@ -109,10 +109,9 @@ void RealTimeUndistort(cv::Mat &ori_img, cv::Mat &new_img)
 
   fisheye::initUndistortRectifyMap(intrinsic_matrix, distortion_coeffs, R,intrinsic_matrix,
         cv::Size(Width,Height), CV_32FC1, mapx, mapy);
-  cv::Mat GrayImg;
-  cv::cvtColor(ori_img,GrayImg,CV_BGR2GRAY);
- 
-  cv::remap(GrayImg, new_img, mapx, mapy, INTER_LINEAR);
+  cv::Mat DistImg(ori_img.size(), ori_img.type());
+  cv::remap(ori_img, DistImg, mapx, mapy, INTER_LINEAR);
+  DistImg.copyTo(new_img);
 }
 
 /**
@@ -144,7 +143,7 @@ int main(int argc, char **argv)
 	}      
     else if(mode == "UNDISTORTION"){ 
         int camid = std::atoi(argv[1]);
-		cv::Mat t(Height,Width,CV_8UC1);
+		
 
 		cv::VideoCapture cap(camid);
 	    cap.set(cv::CAP_PROP_FRAME_WIDTH,Width);
@@ -152,6 +151,7 @@ int main(int argc, char **argv)
 	    cv::Mat reading_img;
 	    while(cap.read(reading_img))
 	    {
+			cv::Mat t(reading_img.size(),reading_img.type());
 			RealTimeUndistort(reading_img,t);
 	    	cv::imshow("current Image",t);
 			char c=cv::waitKey(1);
